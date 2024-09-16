@@ -1,9 +1,9 @@
 package com.shop.vtluan.controller;
 
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,33 +22,46 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.shop.vtluan.model.Products;
+import com.shop.vtluan.model.Token;
 import com.shop.vtluan.model.User;
 import com.shop.vtluan.model.DTO.UserDto;
+import com.shop.vtluan.service.CartService;
+import com.shop.vtluan.service.Cart_detailService;
 import com.shop.vtluan.service.EmailService;
 import com.shop.vtluan.service.ProductService;
+import com.shop.vtluan.service.TokenService;
 import com.shop.vtluan.service.UserService;
+import com.shop.vtluan.model.Cart;
+import com.shop.vtluan.model.Cart_detail;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
 public class HomePageController {
     private final EmailService emailService;
     private final UserService userService;
+    private final TokenService tokenService;
     private final ProductService productService;
     private final PasswordEncoder passwordEncoder;
+    private final CartService cartService;
+    private final Cart_detailService cart_detailsDetailService;
 
-    public HomePageController(UserService userService, ProductService productService,
-            EmailService emailService, PasswordEncoder passwordEncoder) {
-        this.userService = userService;
+    public HomePageController(UserService userService, ProductService productService, TokenService tokenService,
+            EmailService emailService, PasswordEncoder passwordEncoder, CartService cartService,
+            Cart_detailService cart_detailService) {
         this.productService = productService;
+        this.userService = userService;
+        this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.cartService = cartService;
+        this.cart_detailsDetailService = cart_detailService;
     }
 
     @GetMapping("/")
     public String getHomePage(Model model, @RequestParam Optional<String> pageNum,
             @RequestParam("name") Optional<String> name) {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 
         int page = 1;
         try {
@@ -137,9 +150,19 @@ public class HomePageController {
                 model.addAttribute("error", "Email không tồn tại");
                 return "auth/forgot";
             }
+            // create token
             String token = UUID.randomUUID().toString();
-            user.setToken(token);
-            this.userService.saveUser(user);
+            // Create expiry time
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MINUTE, 2);
+            String expiryTime = format.format(calendar.getTime());
+            System.out.println("run here>>" + expiryTime);
+
+            // Save Obj Token
+            this.tokenService.saveToken(token, expiryTime, user);
+
+            // Send mail
             String resetUrl = "http://localhost:8080/reset-password?token=" + token;
             emailService.sendResetPasswordEmail(user.getEmail(), resetUrl);
 
@@ -149,33 +172,110 @@ public class HomePageController {
     }
 
     @GetMapping("/reset-password")
-    public String postResetPassword(@RequestParam("token") String token, Model model) {
-        System.out.println(">>>> run here : " + token);
+    public String postResetPassword(@RequestParam("token") String token, Model model) throws ParseException {
+        Token tokenFind = this.tokenService.findTokenByToken(token);
+
+        if (tokenFind == null) {
+            model.addAttribute("tokenNotFound", "Token Not Found");
+            this.tokenService.deleteToken(tokenFind);
+            return "auth/token_expiry";
+        }
+        // check time expiry
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = format.parse(tokenFind.getExpiryTime());
+        boolean checkExpiryTime = date.before(new Date());
+        System.out.println("time check " + date);
+        System.out.println(new Date());
+        System.out.println("run here >>" + checkExpiryTime);
+        if (checkExpiryTime) {
+            model.addAttribute("tokenExpired", "Token Expiry");
+            this.tokenService.deleteToken(tokenFind);
+            return "auth/token_expiry";
+        }
+
         model.addAttribute("token", token);
 
         return "auth/changer_password";
     }
 
     @PostMapping("/changer_password")
-    public String postMethodName(@RequestParam("password") Optional<String> passwordOptional,
-            @RequestParam("confirm") Optional<String> confirmOptional, @RequestParam("token") Optional<String> token,
+    public String postChangrtPassword(@RequestParam("password") Optional<String> passwordOptional,
+            @RequestParam("confirm") Optional<String> confirmOptional,
+            @RequestParam("token") Optional<String> token,
             Model model) {
+        // Find Token by token
+        Token tokenFind = this.tokenService.findTokenByToken(token.get());
         if (passwordOptional.isEmpty() || confirmOptional.isEmpty()
                 || !passwordOptional.equals(confirmOptional)) {
             model.addAttribute("message", "Thông tin không để trống ");
             return "auth/changer_password";
         }
 
-        if (token.isPresent()) {
-            User user = this.userService.getUserByToken(token.get());
+        if (tokenFind != null) {
+            User user = tokenFind.getUser();
             if (user != null) {
-                user.setToken(null);
                 user.setPassword(passwordEncoder.encode(passwordOptional.get()));
                 this.userService.saveUser(user);
+                // delete token
+                this.tokenService.deleteToken(tokenFind);
             }
+
         }
 
         return "auth/login";
+    }
+
+    @SuppressWarnings("null")
+    @GetMapping("/add_to_cart")
+    public String getAddToCart(HttpSession session, Optional<Long> productId) {
+        // get email
+        String email = (String) session.getAttribute("emailSession");
+
+        // get product
+        Optional<Products> products = Optional.empty();
+        if (productId.isPresent()) {
+            products = this.productService.findProduct(productId.get());
+        }
+
+        // check user exist cart
+        User user = this.userService.getUserByEmail(email);
+        Cart cart = user.getCart();
+
+        double itemPrice = Double.parseDouble(products.get().getPrice());
+        // cart not exist
+        if (cart == null && products.isPresent()) {
+            Cart newCart = new Cart();
+            newCart.setUser(user);
+            newCart.setProduct_total(0);
+            newCart.setTotal_price(0);
+            cart = this.cartService.saveCart(newCart);
+        }
+
+        // Save total price
+        cart.setTotal_price(cart.getTotal_price() + itemPrice);
+        this.cartService.saveCart(cart);
+
+        Optional<Cart_detail> cart_detailOld = this.cart_detailsDetailService.checkExistProductAndCart(products.get(),
+                cart);
+        if (cart_detailOld.isEmpty()) {
+            Cart_detail cart_detail = new Cart_detail();
+            cart_detail.setCart(cart);
+            cart_detail.setProducts(products.get());
+            cart_detail.setQuantity(1);
+            this.cart_detailsDetailService.saveCart_detail(cart_detail);
+
+            // set product total of cart
+            int sum = cart.getProduct_total() + 1;
+            cart.setProduct_total(sum);
+            session.setAttribute("total", sum);
+            this.cartService.saveCart(cart);
+        } else {
+            int sum = cart_detailOld.get().getQuantity() + 1;
+            cart_detailOld.get().setQuantity(sum);
+            this.cart_detailsDetailService.saveCart_detail(cart_detailOld.get());
+        }
+
+        return "redirect:/";
     }
 
 }

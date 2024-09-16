@@ -13,7 +13,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import com.shop.vtluan.model.Products;
-import com.shop.vtluan.model.User;
 import com.shop.vtluan.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -150,17 +149,5 @@ public class ProductController {
         }
         return "admin/manage_products/view_product";
     }
-
-    // @PostMapping("/admin/user/search")
-    // public String search(@RequestParam(name = "query", required = false) String
-    // query, Model model) {
-    // if (query != null && !query.trim().isEmpty()) {
-    // List<User> results = this.userService.searchByName(query);
-    // model.addAttribute("results", results);
-    // }
-    // return "admin/manage_user/search_user";
-    // }
-
-    // }
 
 }

@@ -216,7 +216,7 @@
                                                                             </span>
 
                                                                         </h5>
-                                                                        <a href="#"
+                                                                        <a href="/add_to_cart?productId=${product.id}"
                                                                             class="mt-3 btn border border-secondary rounded-pill px-3 text-primary"><i
                                                                                 class="fa fa-shopping-bag me-2 text-primary"></i>
                                                                             Add to cart</a>

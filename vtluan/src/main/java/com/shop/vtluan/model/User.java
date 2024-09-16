@@ -1,5 +1,7 @@
 package com.shop.vtluan.model;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -11,7 +13,9 @@ import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
@@ -38,12 +42,25 @@ public class User {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    public String getToken() {
-        return token;
+    @OneToOne(mappedBy = "user")
+    private Token token;
+
+    public User(long id,
+            @NotNull(message = "khong duoc de trong") @Size(min = 3, message = "Nhập tối thiểu 3 kí tự") String email,
+            @NotNull(message = "khong duoc de trong") @Size(min = 3, message = "Nhập tối thiểu 3 kí tự") String name,
+            @NotNull(message = "khong duoc de trong") @Size(min = 3, message = "Nhập tối thiểu 3 kí tự") String password,
+            @NotNull(message = "khong duoc de trong") @Size(min = 3, message = "Nhập tối thiểu 3 kí tự") String phone_number,
+            String image) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.phone_number = phone_number;
+        this.image = image;
+
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public User() {
     }
 
     public Cart getCart() {
@@ -54,10 +71,8 @@ public class User {
         this.cart = cart;
     }
 
-    private String token;
-
     @OneToOne(mappedBy = "user")
-    Cart cart;
+    private Cart cart;
 
     public long getId() {
         return id;
@@ -77,6 +92,14 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public Token getToken() {
+        return token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 
     public void setName(String name) {

@@ -18,6 +18,20 @@ public class Cart {
 
     int product_total;
 
+    double total_price;
+
+    public void setProduct_total(int product_total) {
+        this.product_total = product_total;
+    }
+
+    public double getTotal_price() {
+        return total_price;
+    }
+
+    public void setTotal_price(double total_price) {
+        this.total_price = total_price;
+    }
+
     public long getId() {
         return id;
     }
@@ -28,10 +42,6 @@ public class Cart {
 
     public int getProduct_total() {
         return product_total;
-    }
-
-    public void setProduct_total(int product_total) {
-        this.product_total = product_total;
     }
 
     public User getUser() {

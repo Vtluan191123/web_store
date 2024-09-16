@@ -120,8 +120,4 @@ public class UserService {
         return this.userRepository.existsByEmail(email);
     }
 
-    public User getUserByToken(String token) {
-        return this.userRepository.findByToken(token);
-    }
-
 }
