@@ -101,11 +101,6 @@ public class HomePageController {
         return "user/product_detail";
     }
 
-    @GetMapping("/cart")
-    public String getCart() {
-        return "user/cart";
-    }
-
     @GetMapping("/register")
     public String getRegister(Model model) {
         model.addAttribute("userDto", new UserDto());
@@ -223,59 +218,6 @@ public class HomePageController {
         }
 
         return "auth/login";
-    }
-
-    @SuppressWarnings("null")
-    @GetMapping("/add_to_cart")
-    public String getAddToCart(HttpSession session, Optional<Long> productId) {
-        // get email
-        String email = (String) session.getAttribute("emailSession");
-
-        // get product
-        Optional<Products> products = Optional.empty();
-        if (productId.isPresent()) {
-            products = this.productService.findProduct(productId.get());
-        }
-
-        // check user exist cart
-        User user = this.userService.getUserByEmail(email);
-        Cart cart = user.getCart();
-
-        double itemPrice = Double.parseDouble(products.get().getPrice());
-        // cart not exist
-        if (cart == null && products.isPresent()) {
-            Cart newCart = new Cart();
-            newCart.setUser(user);
-            newCart.setProduct_total(0);
-            newCart.setTotal_price(0);
-            cart = this.cartService.saveCart(newCart);
-        }
-
-        // Save total price
-        cart.setTotal_price(cart.getTotal_price() + itemPrice);
-        this.cartService.saveCart(cart);
-
-        Optional<Cart_detail> cart_detailOld = this.cart_detailsDetailService.checkExistProductAndCart(products.get(),
-                cart);
-        if (cart_detailOld.isEmpty()) {
-            Cart_detail cart_detail = new Cart_detail();
-            cart_detail.setCart(cart);
-            cart_detail.setProducts(products.get());
-            cart_detail.setQuantity(1);
-            this.cart_detailsDetailService.saveCart_detail(cart_detail);
-
-            // set product total of cart
-            int sum = cart.getProduct_total() + 1;
-            cart.setProduct_total(sum);
-            session.setAttribute("total", sum);
-            this.cartService.saveCart(cart);
-        } else {
-            int sum = cart_detailOld.get().getQuantity() + 1;
-            cart_detailOld.get().setQuantity(sum);
-            this.cart_detailsDetailService.saveCart_detail(cart_detailOld.get());
-        }
-
-        return "redirect:/";
     }
 
 }
