@@ -1,6 +1,7 @@
 package com.shop.vtluan.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -221,9 +222,14 @@ public class ProductController {
     public String getCart(Model model, HttpSession session) {
         String email = (String) session.getAttribute("emailSession");
         User user = this.userService.getUserByEmail(email);
-        Cart cart = user.getCart();
+        Cart cart = user.getCart() == null ? null : user.getCart();
         List<Cart_detail> listCart_details = this.cart_detailService.getListCart_detail(cart);
-        model.addAttribute("listCart_details", listCart_details);
+        if (listCart_details == null) {
+            model.addAttribute("listCart_details", new ArrayList<>());
+        } else {
+            model.addAttribute("listCart_details", listCart_details);
+        }
+
         return "user/cart";
     }
 

@@ -10,12 +10,14 @@
             <div class="navbar-nav align-items-center ms-auto">
 
                 <div class="nav-item dropdown">
-
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <img class="rounded-circle me-lg-2" src="image/${sessionScope.imageSession}" alt=""
-                            style="width: 40px; height: 40px;">
-                        <span class="d-none d-lg-inline-flex">${sessionScope.name}</span>
-                    </a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3>Xin chào, ${sessionScope.nameSession}</h3>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <img class="rounded-circle me-lg-2" src="image/${sessionScope.imageSession}" alt=""
+                                style="width: 40px; height: 40px;">
+                            <span class="d-none d-lg-inline-flex">${sessionScope.name}</span>
+                        </a>
+                    </div>
                     <div
                         class="dropdown-menu dropdown-menu-end text-center bg-light border-0 rounded-0 rounded-bottom m-0">
 

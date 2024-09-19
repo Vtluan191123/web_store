@@ -55,7 +55,8 @@ public class CustomSuccesshandle implements AuthenticationSuccessHandler {
         session.setAttribute("nameSession", user.getName());
         session.setAttribute("imageSession", user.getImage());
         session.setAttribute("emailSession", user.getEmail());
-        session.setAttribute("total", user.getCart().getProduct_total());
+        int total = user.getCart() == null ? 0 : user.getCart().getProduct_total();
+        session.setAttribute("total", total);
         session.removeAttribute(WebAttributes.AUTHENTICATION_EXCEPTION);
     }
 

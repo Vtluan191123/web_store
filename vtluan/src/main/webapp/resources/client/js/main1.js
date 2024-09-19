@@ -136,16 +136,22 @@
     $('.quantity button').on('click', function () {
         var button = $(this);
         var oldValue = button.parent().parent().find('input').val();
+        var total = $('.total').text();
+
         if (button.hasClass('btn-plus')) {
             var newVal = parseFloat(oldValue) + 1;
+            console.log(total);
+            //var totalNew = parseFloat(total) / parseFloat(oldValue) * newVal;
         } else {
-            if (oldValue > 0) {
+            if (oldValue > 1) {
                 var newVal = parseFloat(oldValue) - 1;
+                //var totalNew = parseFloat(total) / parseFloat(oldValue) * newVal;
             } else {
-                newVal = 0;
+                newVal = 1;
             }
         }
         button.parent().parent().find('input').val(newVal);
+        // total.val(totalNew);
     });
 
 })(jQuery);

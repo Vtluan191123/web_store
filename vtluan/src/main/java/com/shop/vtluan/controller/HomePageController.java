@@ -25,16 +25,11 @@ import com.shop.vtluan.model.Products;
 import com.shop.vtluan.model.Token;
 import com.shop.vtluan.model.User;
 import com.shop.vtluan.model.DTO.UserDto;
-import com.shop.vtluan.service.CartService;
-import com.shop.vtluan.service.Cart_detailService;
 import com.shop.vtluan.service.EmailService;
 import com.shop.vtluan.service.ProductService;
 import com.shop.vtluan.service.TokenService;
 import com.shop.vtluan.service.UserService;
-import com.shop.vtluan.model.Cart;
-import com.shop.vtluan.model.Cart_detail;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 @Controller
@@ -44,19 +39,15 @@ public class HomePageController {
     private final TokenService tokenService;
     private final ProductService productService;
     private final PasswordEncoder passwordEncoder;
-    private final CartService cartService;
-    private final Cart_detailService cart_detailsDetailService;
 
     public HomePageController(UserService userService, ProductService productService, TokenService tokenService,
-            EmailService emailService, PasswordEncoder passwordEncoder, CartService cartService,
-            Cart_detailService cart_detailService) {
+            EmailService emailService, PasswordEncoder passwordEncoder) {
         this.productService = productService;
         this.userService = userService;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
-        this.cartService = cartService;
-        this.cart_detailsDetailService = cart_detailService;
+
     }
 
     @GetMapping("/")
@@ -77,7 +68,7 @@ public class HomePageController {
             System.out.println("Đã xảy ra lỗi: " + e.getMessage());
         }
 
-        org.springframework.data.domain.Pageable pageable = PageRequest.of(page - 1, 4);
+        org.springframework.data.domain.Pageable pageable = PageRequest.of(page - 1, 8);
 
         Page<Products> pageProducts = this.productService.getAllProducts(pageable);
         List<Products> products = pageProducts.getContent();
@@ -154,8 +145,14 @@ public class HomePageController {
             String expiryTime = format.format(calendar.getTime());
             System.out.println("run here>>" + expiryTime);
 
-            // Save Obj Token
-            this.tokenService.saveToken(token, expiryTime, user);
+            // check user exist token
+            if (user.getToken() != null) {
+                // update token
+                this.tokenService.updateToken(token, expiryTime, user.getToken());
+            } else {
+                // Save Obj Token
+                this.tokenService.saveToken(token, expiryTime, user);
+            }
 
             // Send mail
             String resetUrl = "http://localhost:8080/reset-password?token=" + token;
@@ -172,7 +169,6 @@ public class HomePageController {
 
         if (tokenFind == null) {
             model.addAttribute("tokenNotFound", "Token Not Found");
-            this.tokenService.deleteToken(tokenFind);
             return "auth/token_expiry";
         }
         // check time expiry

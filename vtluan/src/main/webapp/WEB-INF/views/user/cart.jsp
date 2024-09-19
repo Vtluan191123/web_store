@@ -82,7 +82,7 @@
                                                 <p class="mb-0 mt-4">${item.products.name}</p>
                                             </td>
                                             <td>
-                                                <p class="mb-0 mt-4">
+                                                <p class="mb-0 mt-4 ">
                                                     <fmt:formatNumber type="number" maxFractionDigits="3"
                                                         value="${item.products.price}" />đ
                                                 </p>
@@ -108,7 +108,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <p class="mb-0 mt-4">
+                                                <p class="mb-0 mt-4 total">
                                                     <fmt:formatNumber type="number" maxFractionDigits="3"
                                                         value="${item.quantity * item.products.price}" />đ
                                                 </p>

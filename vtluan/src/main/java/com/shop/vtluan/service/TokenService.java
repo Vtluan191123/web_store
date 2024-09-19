@@ -26,4 +26,10 @@ public class TokenService {
         this.tokenRepository.delete(tokenFind);
     }
 
+    public void updateToken(String token, String expiryTime, Token tokenUser) {
+        tokenUser.setExpiryTime(expiryTime);
+        tokenUser.setToken(token);
+        this.tokenRepository.save(tokenUser);
+    }
+
 }
