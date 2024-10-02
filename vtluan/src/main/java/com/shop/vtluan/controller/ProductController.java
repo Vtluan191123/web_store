@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ProductController {
@@ -272,6 +273,38 @@ public class ProductController {
         this.cartService.saveCart(cart);
         session.setAttribute("total", sum);
         return "redirect:/cart";
+    }
+
+    @SuppressWarnings("null")
+    @PostMapping("/checkout")
+    public String postCheckOut(HttpSession session, Model model, @RequestParam("productId") List<Long> id,
+            @RequestParam("productQuantity") List<Integer> quantityItem,
+            @RequestParam("totalPrice") double totalPrice) {
+        String email = (String) session.getAttribute("emailSession");
+        User user = this.userService.getUserByEmail(email);
+        Cart cart = user.getCart() == null ? null : user.getCart();
+        // update cart_detail
+        // get cart_detail by cart with product
+        int index = 0;
+        for (long itemId : id) {
+            Optional<Products> products = this.productService.findProduct(itemId);
+            if (products.isPresent()) {
+                Optional<Cart_detail> updateCart_detail = this.cart_detailService
+                        .checkExistProductAndCart(products.get(), cart);
+                if (updateCart_detail.isPresent()) {
+                    updateCart_detail.get().setQuantity(quantityItem.get(index));
+                }
+                this.cart_detailService.saveCart_detail(updateCart_detail.get());
+            }
+            index++;
+        }
+        cart.setTotal_price(totalPrice);
+        this.cartService.saveCart(cart);
+
+        List<Cart_detail> listCart_details = this.cart_detailService.getListCart_detail(cart);
+        model.addAttribute("listCart_details", listCart_details);
+        model.addAttribute("totalPrice", totalPrice);
+        return "user/checkout";
     }
 
 }

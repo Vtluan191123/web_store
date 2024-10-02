@@ -65,7 +65,7 @@
                                         <th scope="col">Price</th>
                                         <th scope="col">Quantity</th>
                                         <th scope="col">Total</th>
-                                        <th scope="col">Handle</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,23 +89,13 @@
                                             </td>
                                             <td>
                                                 <div class="input-group quantity mt-4" style="width: 100px;">
-                                                    <div class="input-group-btn">
-                                                        <button
-                                                            class="btn btn-sm btn-minus rounded-circle bg-light border">
-                                                            <i class="fa fa-minus"></i>
-                                                        </button>
-                                                    </div>
+
                                                     <input type="text" data-product-id="${item.products.id}"
                                                         data-price="${item.products.price}" disabled
                                                         class="form-control form-control-sm text-center border-0"
                                                         value="${item.quantity}">
 
-                                                    <div class="input-group-btn">
-                                                        <button
-                                                            class="btn btn-sm btn-plus rounded-circle bg-light border">
-                                                            <i class="fa fa-plus"></i>
-                                                        </button>
-                                                    </div>
+
                                                 </div>
                                             </td>
                                             <td>
@@ -115,15 +105,7 @@
                                                 </p>
 
                                             </td>
-                                            <form action="/delete_item_cart/${item.id}" method="post">
-                                                <td>
-                                                    <button class="btn btn-md rounded-circle bg-light border mt-4">
-                                                        <i class="fa fa-times text-danger"></i>
-                                                    </button>
-                                                    <input type="hidden" name="${_csrf.parameterName}"
-                                                        value="${_csrf.token}" />
-                                                </td>
-                                            </form>
+
 
 
                                         </tr>
@@ -171,16 +153,12 @@
                                             <c:forEach var="item" items="${listCart_details}">
                                                 <div class="mb-5 d-none">
                                                     <label for="">id:</label><br>
-                                                    <input name="productId" type="text" value="${item.products.id}"><br>
+                                                    <input type="text" value="${item.products.id}"><br>
                                                     <label for="">quantity:</label><br>
-                                                    <input name="productQuantity" type="text"
-                                                        quantity-dynamic-id=${item.products.id}
+                                                    <input type="text" quantity-dynamic-id=${item.products.id}
                                                         value="${item.quantity}">
-
                                                 </div>
                                             </c:forEach>
-                                            <input name="totalPrice" class="d-none totalPrice" type="text"
-                                                value="${totalPrice}">
                                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
                                             <button
                                                 class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"

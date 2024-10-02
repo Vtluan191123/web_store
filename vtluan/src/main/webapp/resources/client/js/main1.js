@@ -143,7 +143,8 @@
         const totalId = $(`p[data-total-id='${id}']`);
         const quantityForm = $('.quantity_form')
         const quantity_dynamic = $(`input[quantity-dynamic-id='${id}']`)
-        console.log(quantity_dynamic)
+        const totalPriceCheckOut = $(".totalPrice")
+        console.log(totalPriceCheckOut)
 
         if (button.hasClass('btn-plus')) {
             var newVal = parseFloat(oldValue) + 1;
@@ -163,7 +164,6 @@
         totalId.text(formatCurrency(a))
 
         const totalPrice = $('p[data-total-cart-price]')
-        console.log(totalPrice)
         let currenctPrice = $('p[data-total-cart-price]').first().attr('data-total-cart-price');
         let newTotal = +currenctPrice
         if (changer === 0) {
@@ -180,6 +180,7 @@
             $(totalPrice[index]).attr('data-total-cart-price', newTotal)
         })
         quantity_dynamic.val(inputValueItem.val())
+        totalPriceCheckOut.val(newTotal)
     });
 
 
