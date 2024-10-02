@@ -95,7 +95,8 @@
                                                             <i class="fa fa-minus"></i>
                                                         </button>
                                                     </div>
-                                                    <input type="text"
+                                                    <input type="text" data-product-id="${item.products.id}"
+                                                        data-price="${item.products.price}" disabled
                                                         class="form-control form-control-sm text-center border-0"
                                                         value="${item.quantity}">
 
@@ -108,7 +109,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <p class="mb-0 mt-4 total">
+                                                <p data-total-id="${item.products.id}" class="mb-0 mt-4 total ">
                                                     <fmt:formatNumber type="number" maxFractionDigits="3"
                                                         value="${item.quantity * item.products.price}" />đ
                                                 </p>
@@ -141,23 +142,41 @@
                                 <div class="col-sm-8 col-md-7 col-lg-6 col-xl-8">
                                     <div class="bg-light rounded">
                                         <div class="p-4">
-                                            <h1 style="text-align: center;" class="display-6 mb-4">Cart <span
-                                                    class="fw-normal">Total</span></h1>
+                                            <h1 style="text-align: center;" class="display-6 mb-4" class="fw-normal">
+                                                Thanh toán</h1>
                                             <div class="d-flex justify-content-between mb-4">
-                                                <h5 class="mb-0 me-4">Total:</h5>
-                                                <p class="mb-0">$96.00</p>
+                                                <h5 class="mb-0 me-4">Tổng :</h5>
+                                                <p data-total-cart-price="${totalPrice}" class="mb-0">
+                                                    <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                        value="${totalPrice}" />đ
+                                                </p>
                                             </div>
 
                                             <div class="d-flex justify-content-between mb-4">
-                                                <h5 class="mb-0 me-4">Total:</h5>
-                                                <p class="mb-0">$96.00</p>
+                                                <h5 class="mb-0 me-4">Tổng :</h5>
+                                                <p data-total-cart-price="${totalPrice}" class="mb-0">
+                                                    <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                        value="${totalPrice}" />đ
+                                                </p>
                                             </div>
                                         </div>
                                         <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                                            <h5 class="mb-0 ps-4 me-4">Total</h5>
-                                            <p class="mb-0 pe-4">$99.00</p>
+                                            <h5 class="mb-0 ps-4 me-4">Tổng</h5>
+                                            <p data-total-cart-price="${totalPrice}" class="mb-0 pe-4">
+                                                <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                    value="${totalPrice}" />đ
+                                            </p>
                                         </div>
-                                        <form action="">
+                                        <form action="/checkout" method="post">
+                                            <c:forEach var="item" items="${listCart_details}">
+                                                <div class="mb-5 d-none">
+                                                    <label for="">id:</label><br>
+                                                    <input type="text" value="${item.products.id}"><br>
+                                                    <label for="">quantity:</label><br>
+                                                    <input type="text" quantity-dynamic-id=${item.products.id}
+                                                        value="${item.quantity}">
+                                                </div>
+                                            </c:forEach>
                                             <button
                                                 class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"
                                                 type="button">Proceed Checkout</button>

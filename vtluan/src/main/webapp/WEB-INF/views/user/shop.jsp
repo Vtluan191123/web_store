@@ -43,7 +43,7 @@
             <!-- Spinner End -->
 
 
-            <jsp:include page="../../admin/layout/header.jsp" />
+            <jsp:include page="../user/layout/header.jsp" />
 
 
 
@@ -471,7 +471,7 @@
             <!-- Fruits Shop End-->
 
 
-            <jsp:include page="../../admin/layout/footer.jsp" />
+            <jsp:include page="../user/layout/footer.jsp" />
 
 
 

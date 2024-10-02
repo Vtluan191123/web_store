@@ -119,7 +119,6 @@
         $('.btn-play').click(function () {
             $videoSrc = $(this).data("src");
         });
-        console.log($videoSrc);
 
         $('#videoModal').on('shown.bs.modal', function (e) {
             $("#video").attr('src', $videoSrc + "?autoplay=1&amp;modestbranding=1&amp;showinfo=0");
@@ -131,28 +130,73 @@
     });
 
 
-
     // Product Quantity
     $('.quantity button').on('click', function () {
         var button = $(this);
+        var changer = 0;
         var oldValue = button.parent().parent().find('input').val();
-        var total = $('.total').text();
+
+        const id = button.parent().parent().find('input').attr('data-product-id')
+        const inputValueItem = $(`input[data-product-id='${id}']`)
+        console.log(inputValueItem)
+        const priceOfProduct = button.parent().parent().find('input').attr('data-price')
+        const totalId = $(`p[data-total-id='${id}']`);
+        const quantityForm = $('.quantity_form')
+        const quantity_dynamic = $(`input[quantity-dynamic-id='${id}']`)
+        console.log(quantity_dynamic)
 
         if (button.hasClass('btn-plus')) {
             var newVal = parseFloat(oldValue) + 1;
-            console.log(total);
-            //var totalNew = parseFloat(total) / parseFloat(oldValue) * newVal;
+            changer = 1;
         } else {
             if (oldValue > 1) {
                 var newVal = parseFloat(oldValue) - 1;
-                //var totalNew = parseFloat(total) / parseFloat(oldValue) * newVal;
+                changer = -1;
             } else {
                 newVal = 1;
+                changer = 0;
             }
         }
         button.parent().parent().find('input').val(newVal);
-        // total.val(totalNew);
+        quantityForm.val(newVal);
+        var a = priceOfProduct * newVal;
+        totalId.text(formatCurrency(a))
+
+        const totalPrice = $('p[data-total-cart-price]')
+        console.log(totalPrice)
+        let currenctPrice = $('p[data-total-cart-price]').first().attr('data-total-cart-price');
+        let newTotal = +currenctPrice
+        if (changer === 0) {
+            newTotal = +currenctPrice
+        } else {
+            newTotal = changer * (+priceOfProduct) + (+currenctPrice)
+        }
+
+        changer = 0;
+
+        totalPrice?.each((index, item) => {
+            $(totalPrice[index]).text(formatCurrency(newTotal))
+
+            $(totalPrice[index]).attr('data-total-cart-price', newTotal)
+        })
+        quantity_dynamic.val(inputValueItem.val())
     });
+
+
+
+    function formatCurrency(number) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(number).replace(/\s?₫/, 'đ'); // Thay thế "₫" bằng "đ"
+    }
+
+    // Sử dụng hàm
+    let number = 49990000;
+    console.log(formatCurrency(number)); // 49.990.000đ
+
 
 })(jQuery);
 

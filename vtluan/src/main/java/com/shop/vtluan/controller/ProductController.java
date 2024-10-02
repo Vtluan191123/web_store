@@ -22,6 +22,7 @@ import com.shop.vtluan.service.Cart_detailService;
 import com.shop.vtluan.service.ProductService;
 import com.shop.vtluan.service.UserService;
 
+import jakarta.persistence.PrePersist;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -31,7 +32,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ProductController {
@@ -167,7 +167,9 @@ public class ProductController {
     }
 
     @GetMapping("/add_to_cart")
-    public String getAddToCart(HttpSession session, Optional<Long> productId) {
+    public String getAddToCart(HttpSession session,
+            @RequestParam Optional<Long> productId,
+            @RequestParam Optional<Integer> quantityItem) {
         // get email
         String email = (String) session.getAttribute("emailSession");
 
@@ -176,14 +178,16 @@ public class ProductController {
         if (productId.isPresent()) {
             products = this.productService.findProduct(productId.get());
         }
-
         // check user exist cart
         User user = this.userService.getUserByEmail(email);
         Cart cart = user.getCart();
+        double itemPrice = 0;
+        if (products.isPresent()) {
+            itemPrice = Double.parseDouble(products.get().getPrice());
+        }
 
-        double itemPrice = Double.parseDouble(products.get().getPrice());
         // cart not exist
-        if (cart == null && products.isPresent()) {
+        if (cart == null) {
             Cart newCart = new Cart();
             newCart.setUser(user);
             newCart.setProduct_total(0);
@@ -192,8 +196,13 @@ public class ProductController {
         }
 
         // Save total price
-        cart.setTotal_price(cart.getTotal_price() + itemPrice);
-        this.cartService.saveCart(cart);
+        if (quantityItem.isPresent()) {
+            cart.setTotal_price(cart.getTotal_price() + itemPrice * quantityItem.get());
+            this.cartService.saveCart(cart);
+        } else {
+            cart.setTotal_price(cart.getTotal_price() + itemPrice);
+            this.cartService.saveCart(cart);
+        }
 
         Optional<Cart_detail> cart_detailOld = this.cart_detailService.checkExistProductAndCart(products.get(),
                 cart);
@@ -201,7 +210,7 @@ public class ProductController {
             Cart_detail cart_detail = new Cart_detail();
             cart_detail.setCart(cart);
             cart_detail.setProducts(products.get());
-            cart_detail.setQuantity(1);
+            cart_detail.setQuantity(quantityItem.isPresent() ? quantityItem.get() : 1);
             this.cart_detailService.saveCart_detail(cart_detail);
 
             // set product total of cart
@@ -210,8 +219,14 @@ public class ProductController {
             session.setAttribute("total", sum);
             this.cartService.saveCart(cart);
         } else {
-            int sum = cart_detailOld.get().getQuantity() + 1;
-            cart_detailOld.get().setQuantity(sum);
+            if (quantityItem.isPresent()) {
+                int sum = cart_detailOld.get().getQuantity() + quantityItem.get();
+                cart_detailOld.get().setQuantity(sum);
+            } else {
+                int sum = cart_detailOld.get().getQuantity() + 1;
+                cart_detailOld.get().setQuantity(sum);
+            }
+
             this.cart_detailService.saveCart_detail(cart_detailOld.get());
         }
 
@@ -224,6 +239,8 @@ public class ProductController {
         User user = this.userService.getUserByEmail(email);
         Cart cart = user.getCart() == null ? null : user.getCart();
         List<Cart_detail> listCart_details = this.cart_detailService.getListCart_detail(cart);
+        double totalPrice = cart == null ? 0 : cart.getTotal_price();
+        model.addAttribute("totalPrice", totalPrice);
         if (listCart_details == null) {
             model.addAttribute("listCart_details", new ArrayList<>());
         } else {
@@ -239,11 +256,19 @@ public class ProductController {
         User user = this.userService.getUserByEmail(email);
         Cart cart = user.getCart();
         Optional<Cart_detail> cart_detail = this.cart_detailService.findCart_DetailById(id);
+        double totalProductsOfCart_detail = 0;
         if (cart_detail.isPresent()) {
             this.cart_detailService.deleteItemCart(cart_detail.get());
+            Optional<Products> product = this.productService.getProductsById(cart_detail.get().getProducts().getId());
+            if (product.isPresent()) {
+                totalProductsOfCart_detail = cart_detail.get().getQuantity() * Double.parseDouble(
+                        product.get().getPrice());
+            }
         }
         int sum = cart.getProduct_total() - 1;
+        double currentPrice = cart.getTotal_price();
         cart.setProduct_total(sum);
+        cart.setTotal_price(currentPrice - totalProductsOfCart_detail);
         this.cartService.saveCart(cart);
         session.setAttribute("total", sum);
         return "redirect:/cart";

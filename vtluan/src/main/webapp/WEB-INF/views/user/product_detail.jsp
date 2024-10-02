@@ -44,7 +44,7 @@
                 </div>
                 <!-- Spinner End -->
 
-                <jsp:include page="../../admin/layout/header.jsp" />
+                <jsp:include page="../user/layout/header.jsp" />
 
 
 
@@ -86,7 +86,6 @@
                                                 <i class="fa fa-star"></i>
                                             </div>
                                             <p class="mb-4">${product.des_short}</p>
-
                                             <div class="input-group quantity mb-5" style="width: 100px;">
                                                 <div class="input-group-btn">
                                                     <button class="btn btn-sm btn-minus rounded-circle bg-light border">
@@ -101,9 +100,16 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            <a href="#"
-                                                class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i
-                                                    class="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
+                                            <form action="/add_to_cart">
+                                                <input type="number" class="quantity_form d-none" name="quantityItem"
+                                                    value="1">
+                                                <input type="number" class=" d-none" name="productId"
+                                                    value="${product.id}">
+                                                <button
+                                                    class="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"><i
+                                                        class="fa fa-shopping-bag me-2 text-primary"></i> Add to
+                                                    cart</button>
+                                            </form>
                                     </div>
                                     <div class="col-lg-12">
                                         <nav>
@@ -293,7 +299,7 @@
                 <!-- Single Product End -->
 
 
-                <jsp:include page="../../admin/layout/footer.jsp" />
+                <jsp:include page="../user/layout/footer.jsp" />
 
 
 

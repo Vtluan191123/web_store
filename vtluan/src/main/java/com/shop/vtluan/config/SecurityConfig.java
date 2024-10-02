@@ -81,7 +81,7 @@ public class SecurityConfig {
                                                                 "/WEB-INF/views/**")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                                                .anyRequest().permitAll())
+                                                .anyRequest().authenticated())
 
                                 .exceptionHandling(ex -> ex.accessDeniedPage("/access-deny"))
                                 .formLogin(login -> login
