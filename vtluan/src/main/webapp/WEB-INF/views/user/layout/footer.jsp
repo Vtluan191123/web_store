@@ -1,6 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
     <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-white-50 footer " style="padding-bottom: 30px;">
+    <div class="container-fluid bg-dark text-white-50 footer " style="padding-bottom: 30px; margin-top: 80px;">
         <div class="container py-5 ">
             <div class="pb-4 mb-4" style="border-bottom: 1px solid rgba(226, 175, 24, 0.5) ;">
                 <div class="row g-4 d-flex justify-content-between">

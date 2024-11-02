@@ -22,7 +22,6 @@ import com.shop.vtluan.service.Cart_detailService;
 import com.shop.vtluan.service.ProductService;
 import com.shop.vtluan.service.UserService;
 
-import jakarta.persistence.PrePersist;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -32,7 +31,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class ProductController {
@@ -67,7 +65,7 @@ public class ProductController {
             System.out.println(">> run here");
         }
         Pageable pageable = PageRequest.of(page - 1, 5);
-        Page<Products> productsPage = this.productService.getProducts(pageable);
+        Page<Products> productsPage = this.productService.getAllProducts(pageable);
         List<Products> products = productsPage.getContent();
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
@@ -184,7 +182,7 @@ public class ProductController {
         Cart cart = user.getCart();
         double itemPrice = 0;
         if (products.isPresent()) {
-            itemPrice = Double.parseDouble(products.get().getPrice());
+            itemPrice = products.get().getPrice();
         }
 
         // cart not exist
@@ -262,8 +260,8 @@ public class ProductController {
             this.cart_detailService.deleteItemCart(cart_detail.get());
             Optional<Products> product = this.productService.getProductsById(cart_detail.get().getProducts().getId());
             if (product.isPresent()) {
-                totalProductsOfCart_detail = cart_detail.get().getQuantity() * Double.parseDouble(
-                        product.get().getPrice());
+                totalProductsOfCart_detail = cart_detail.get().getQuantity() *
+                        product.get().getPrice();
             }
         }
         int sum = cart.getProduct_total() - 1;

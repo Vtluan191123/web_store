@@ -21,23 +21,23 @@ import jakarta.servlet.DispatcherType;
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-        @Bean
-        public UserDetailsService userDetailsService() {
-                return new CustomUserDetailsServer();
-        }
+        // @Bean
+        // public UserDetailsService userDetailsService() {
+        // return new CustomUserDetailsServer();
+        // }
 
         @Bean
         public PasswordEncoder passwordEncoder() {
                 return new BCryptPasswordEncoder();
         }
 
-        @Bean
-        public DaoAuthenticationProvider daoAuthenticationProvider() {
-                DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-                provider.setUserDetailsService(userDetailsService());
-                provider.setPasswordEncoder(passwordEncoder());
-                return provider;
-        }
+        // @Bean
+        // public DaoAuthenticationProvider daoAuthenticationProvider() {
+        // DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        // provider.setUserDetailsService(userDetailsService());
+        // provider.setPasswordEncoder(passwordEncoder());
+        // return provider;
+        // }
 
         @Bean
         public AuthenticationSuccessHandler CustomSuccesshandle() {
@@ -78,6 +78,8 @@ public class SecurityConfig {
                                                                 "/client/image/**",
                                                                 "/client/js/**",
                                                                 "/client/lib/**",
+                                                                "/reset-password",
+                                                                "/changer_password",
                                                                 "/WEB-INF/views/**")
                                                 .permitAll()
                                                 .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -89,7 +91,7 @@ public class SecurityConfig {
                                                 .loginPage("/login")
                                                 .failureUrl("/login?error"))
                                 .rememberMe(rm -> rm.key("uniqueAndSecretKey")
-                                                .userDetailsService(userDetailsService())
+                                                // .userDetailsService(userDetailsService())
                                                 .tokenValiditySeconds(86400)
                                 // .rememberMeServices(rememberMeServices())
                                 )

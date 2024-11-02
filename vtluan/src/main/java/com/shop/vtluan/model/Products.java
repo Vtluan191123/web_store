@@ -37,7 +37,19 @@ public class Products {
 
     @NotNull(message = "khong duoc de trong")
     @Size(min = 3, message = "Nhập tối thiểu 3 kí tự")
-    String price;
+    double price;
+
+    @NotNull(message = "khong duoc de trong")
+    @Size(min = 3, message = "Nhập tối thiểu 3 kí tự")
+    String target;
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
     String image;
 
@@ -92,11 +104,11 @@ public class Products {
         this.des_short = des_short;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

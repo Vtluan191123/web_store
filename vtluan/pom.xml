@@ -117,6 +117,12 @@
 		<artifactId>spring-boot-starter-mail</artifactId>
 	</dependency>
 
+	<dependency>
+		<groupId>org.hibernate.orm</groupId>
+		<artifactId>hibernate-jpamodelgen</artifactId>
+		<version>6.2.0.Final</version> <!-- Phiên bản mới nhất hoặc tương thích -->
+	</dependency>
+
 
  </dependencies>
 

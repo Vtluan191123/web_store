@@ -14,7 +14,7 @@
                     </button>
                     <div class="collapse navbar-collapse bg-white d-flex justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav " style="margin-left: 100px;">
-                            <a href="/" class="nav-item nav-link active">Home</a>
+                            <a href="/" class="nav-item nav-link ">Home</a>
                             <a href="/shop" class="nav-item nav-link">Shop</a>
                         </div>
                         <c:if test="${pageContext.request.userPrincipal.name != null}">

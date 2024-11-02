@@ -129,6 +129,23 @@
     border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 
+.item {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.item input {
+    margin: 3px;
+}
+
+.item input[type="checkbox"] {
+    background-color: #81c408;
+}
+
+.item input[type="checkbox"]:checked {
+    background-color: #81c408 !important;
+}
+
 .navbar .navbar-nav .nav-link:hover,
 .navbar .navbar-nav .nav-link.active,
 .fixed-top.bg-white .navbar .navbar-nav .nav-link:hover,

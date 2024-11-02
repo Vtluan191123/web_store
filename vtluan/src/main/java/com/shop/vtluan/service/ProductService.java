@@ -10,12 +10,15 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.shop.vtluan.model.Products;
-import com.shop.vtluan.model.User;
+import com.shop.vtluan.model.DTO.ProductsCriteriaDto;
 import com.shop.vtluan.repository.ProductRepository;
+import com.shop.vtluan.service.spec.ProductSpec;
 
 import jakarta.servlet.ServletContext;
 
@@ -39,10 +42,6 @@ public class ProductService {
 
     public Optional<Products> getProductsById(long id) {
         return this.productRepository.findById(id);
-    }
-
-    public Page<Products> getProducts(Pageable pageable) {
-        return this.productRepository.findAll(pageable);
     }
 
     public String upLoadFile(MultipartFile file) {
@@ -102,6 +101,94 @@ public class ProductService {
 
     public List<Products> searchByNameproduct(String string) {
         return this.productRepository.findByNameContainingIgnoreCase(string);
+    }
+
+    public Page<Products> getProductsByNameLike(Pageable pageable, String name) {
+        return this.productRepository.findAll(ProductSpec.nameLike(name), pageable);
+    }
+
+    public Page<Products> getProductsMinPrice(Pageable pageable, Double price) {
+        return this.productRepository.findAll(ProductSpec.minPrice(price), pageable);
+    }
+
+    public Page<Products> getProductsMaxPrice(Pageable pageable, Double price) {
+        return this.productRepository.findAll(ProductSpec.maxPrice(price), pageable);
+    }
+
+    public Page<Products> getProductsEqualFactory(Pageable pageable, String factory) {
+        return this.productRepository.findAll(ProductSpec.equalFactory(factory), pageable);
+    }
+
+    public Page<Products> getProductsmatchFactory(Pageable pageable, List<String> factory) {
+        return this.productRepository.findAll(ProductSpec.matchBrand(factory), pageable);
+    }
+
+    public Specification<Products> getProductsMatchPrice(List<String> match) {
+        Specification<Products> combie = Specification.where(null);
+        for (String item : match) {
+            double min = 0;
+            double max = 0;
+            switch (item) {
+                case "$lt10":
+                    min = 0;
+                    max = 10000000;
+
+                    break;
+                case "16-20":
+                    min = 16000000;
+                    max = 20000000;
+
+                    break;
+                case "21-25":
+                    min = 21000000;
+                    max = 25000000;
+
+                    break;
+                case "26-30":
+                    min = 26000000;
+                    max = 30000000;
+
+                    break;
+                case "$gt30":
+                    min = 30000001;
+                    max = 10000000000.00;
+
+                    break;
+            }
+            if (max != 0 && min != 0) {
+                Specification<Products> itemCombie = ProductSpec.matchPrice(min, max);
+                combie = combie.and(itemCombie);
+            }
+        }
+
+        return combie;
+    }
+
+    public Page<Products> getCriteriaWithSpec(Pageable pageable, ProductsCriteriaDto productsCriteriaDto) {
+
+        Specification<Products> combie = Specification.where(null);
+
+        if (productsCriteriaDto.getBrand() == null && productsCriteriaDto.getTarget() == null
+                && productsCriteriaDto.getPrice() == null) {
+            return this.productRepository.findAll(pageable);
+        }
+
+        if (productsCriteriaDto.getBrand() != null && productsCriteriaDto.getBrand().isPresent()) {
+            Specification<Products> criteriaItem = ProductSpec.matchBrand(productsCriteriaDto.getBrand().get());
+            combie = combie.and(criteriaItem);
+        }
+
+        if (productsCriteriaDto.getTarget() != null && productsCriteriaDto.getTarget().isPresent()) {
+            Specification<Products> criteriaItem = ProductSpec.matchTarget(productsCriteriaDto.getTarget().get());
+            combie = combie.and(criteriaItem);
+        }
+
+        if (productsCriteriaDto.getPrice() != null && productsCriteriaDto.getPrice().isPresent()) {
+            Specification<Products> criteriaItem = getProductsMatchPrice(productsCriteriaDto.getPrice().get());
+            combie = combie.and(criteriaItem);
+        }
+
+        return this.productRepository.findAll(combie, pageable);
     }
 
 }

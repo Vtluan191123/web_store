@@ -199,6 +199,80 @@
     console.log(formatCurrency(number)); // 49.990.000đ
 
 
+
+    const item = $('a.nav-item')
+
+
+
+
+    item.each(function (index, item) {
+        let href = $(this).attr('href'); // Lấy giá trị href của phần tử
+        let url = location.pathname; // Lấy đường dẫn hiện tại
+        console.log('Current URL Path:', url);
+        console.log('Checking against:', href);
+
+        if (url === href) {
+            $(this).addClass('active'); // Thêm lớp active nếu khớp
+        } else {
+            $(this).removeClass('active'); // Xóa lớp active nếu không khớp
+        }
+    })
+
+    $(document).ready(function () {
+
+
+
+        $('#btn-filter').click(() => {
+            let factoryArr = [];
+            let targetArr = [];
+            let priceArr = [];
+
+
+            $("#factory-filter .item .item-check:checked").each(function () {
+                factoryArr.push($(this).val());
+            })
+
+            $("#target-filter .item .item-check:checked").each(function () {
+                targetArr.push($(this).val());
+            })
+
+            $("#price-filter .item .item-check:checked").each(function () {
+                priceArr.push($(this).val());
+            })
+
+            let sort = $("#sort-filter .item-check:checked").val();
+
+
+
+            const currentUrl = new URL(window.location.href);
+            currentUrl.search = '';
+            const searchParams = currentUrl.searchParams;
+
+            searchParams.set("sort", sort);
+
+
+            if (factoryArr.length > 0)
+                searchParams.set("brand", factoryArr.join(','));
+
+            if (targetArr.length > 0)
+                searchParams.set("target", targetArr.join(','));
+
+            if (priceArr.length > 0)
+                searchParams.set("price", priceArr.join(','));
+
+
+
+            console.log("current", currentUrl);
+            console.log("searchUrl", searchParams);
+
+            document.location.href = currentUrl.toString();
+        })
+    })
+
+
+
+
+
 })(jQuery);
 
 

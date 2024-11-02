@@ -3,6 +3,8 @@ package com.shop.vtluan.controller;
 import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,8 +26,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.shop.vtluan.model.Products;
+import com.shop.vtluan.model.Products_;
 import com.shop.vtluan.model.Token;
 import com.shop.vtluan.model.User;
+import com.shop.vtluan.model.DTO.ProductsCriteriaDto;
 import com.shop.vtluan.model.DTO.UserDto;
 import com.shop.vtluan.service.EmailService;
 import com.shop.vtluan.service.ProductService;
@@ -52,7 +58,7 @@ public class HomePageController {
 
     @GetMapping("/")
     public String getHomePage(Model model, @RequestParam Optional<String> pageNum,
-            @RequestParam("name") Optional<String> name) {
+            @RequestParam("search_home") Optional<String> nameProduct) {
 
         int page = 1;
         try {
@@ -68,18 +74,57 @@ public class HomePageController {
             System.out.println("Đã xảy ra lỗi: " + e.getMessage());
         }
 
-        org.springframework.data.domain.Pageable pageable = PageRequest.of(page - 1, 8);
-
-        Page<Products> pageProducts = this.productService.getAllProducts(pageable);
-        List<Products> products = pageProducts.getContent();
-        model.addAttribute("products", products);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPage", pageProducts.getTotalPages());
+        Pageable pageable = PageRequest.of(page - 1, 8);
+        if (nameProduct.isPresent()) {
+            List<Products> searchs = this.productService.searchByNameproduct(nameProduct.get()) != null
+                    ? this.productService.searchByNameproduct(nameProduct.get())
+                    : new ArrayList<>();
+            model.addAttribute("products", searchs);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPage", searchs.size() / 8 + 1);
+        } else {
+            Page<Products> pageProducts = this.productService.getAllProducts(pageable);
+            List<Products> products = pageProducts.getContent();
+            model.addAttribute("products", products);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPage", pageProducts.getTotalPages());
+        }
+        // search == empty
         return "user/homepage";
     }
 
     @GetMapping("/shop")
-    public String getShop() {
+    public String getShop(Model model,
+            ProductsCriteriaDto productsCriteriaDto) {
+        int page = 1;
+        try {
+            if (productsCriteriaDto.getPage().isPresent()) {
+                int check = Integer.parseInt(productsCriteriaDto.getPage().get());
+                if (check > 0) {
+                    page = check;
+                } else {
+                    page = 1;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Đã xảy ra lỗi: " + e.getMessage());
+        }
+
+        Pageable pageable = null;
+
+        if (productsCriteriaDto.getSort().get().equals("gia-tang-dan")) {
+            pageable = PageRequest.of(page - 1, 60, Sort.by(Products_.PRICE).ascending());
+        } else if (productsCriteriaDto.getSort().get().equals("gia-giam-dan")) {
+            pageable = PageRequest.of(page - 1, 60, Sort.by(Products_.PRICE).descending());
+        } else {
+            pageable = PageRequest.of(page - 1, 60);
+        }
+
+        Page<Products> pageProducts = this.productService.getCriteriaWithSpec(pageable, productsCriteriaDto);
+        // Page<Products> pageProducts =
+        // this.productService.getProductsByNameLike(pageable, name);
+        List<Products> products = pageProducts.getContent();
+        model.addAttribute("products", products);
         return "user/shop";
     }
 
@@ -213,7 +258,7 @@ public class HomePageController {
 
         }
 
-        return "auth/login";
+        return "redirect:/login";
     }
 
 }
