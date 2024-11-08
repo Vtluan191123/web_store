@@ -19,6 +19,7 @@
                     rel="stylesheet">
 
                 <!-- Icon Font Stylesheet -->
+                <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
                 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
                 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css"
                     rel="stylesheet">
@@ -94,8 +95,6 @@
                                                         data-price="${item.products.price}" disabled
                                                         class="form-control form-control-sm text-center border-0"
                                                         value="${item.quantity}">
-
-
                                                 </div>
                                             </td>
                                             <td>
@@ -119,37 +118,59 @@
                             </table>
                         </div>
                         <c:if test="${ not empty listCart_details}">
-                            <div class="row g-4 ">
+                            <form action="/order" method="post">
+                                <div class="row g-4 d-flex justify-content-end mb-5">
+                                    <div class="col-sm-4 col-md-7 col-lg-6 col-xl-4">
+                                        <div class="bg-light rounded p-4 h-100">
+                                            <h3>Thông tin người nhận</h3>
+                                            <label class="mb-1" for="hoten">Họ tên</label><br>
+                                            <input class="mb-3 w-100 rounded border border-dark p-2" type="text"
+                                                id="hoten" name="receiverName" placeholder="Họ tên ..." /><br>
+                                            <label class="mb-1" for="sdt">Số điện thoại</label><br>
+                                            <input class="mb-3 w-100 rounded border border-dark p-2" type="text"
+                                                id="sdt" name="receiverPhoneNumber"
+                                                placeholder="Số điện thoại ..." /><br>
+                                            <label class="mb-1" for="diachi">Địa chỉ</label><br>
+                                            <input class="mb-3 w-100 rounded border border-dark p-2" type="text"
+                                                id="diachi" name="receiverAddress" placeholder="Địa chỉ ..." /><br>
+                                            <a href="/cart"><i class="fas fa-arrow-left"></i><span class="ms-2">Trở
+                                                    lại giỏ
+                                                    hàng</span></a>
 
-                                <div class="col-sm-8 col-md-7 col-lg-6 col-xl-8">
-                                    <div class="bg-light rounded">
-                                        <div class="p-4">
-                                            <h1 style="text-align: center;" class="display-6 mb-4" class="fw-normal">
-                                                Thanh toán</h1>
-                                            <div class="d-flex justify-content-between mb-4">
-                                                <h5 class="mb-0 me-4">Tổng :</h5>
-                                                <p data-total-cart-price="${totalPrice}" class="mb-0">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-8 col-md-7 col-lg-6 col-xl-8">
+                                        <div class="bg-light rounded h-100">
+                                            <div class="p-4">
+                                                <h3 class="text-center">Thanh toán</h3>
+                                                <div class="d-flex justify-content-between mb-4">
+                                                    <h5 class="mb-0 me-4">Tổng :</h5>
+                                                    <p data-total-cart-price="${totalPrice}" class="mb-0">
+                                                        <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                            value="${totalPrice}" />đ
+                                                    </p>
+                                                </div>
+
+                                                <div class="d-flex justify-content-between mb-4">
+                                                    <h5 class="mb-0 me-4">Tổng :</h5>
+                                                    <p data-total-cart-price="${totalPrice}" class="mb-0">
+                                                        <fmt:formatNumber type="number" maxFractionDigits="3"
+                                                            value="${totalPrice}" />đ
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div
+                                                class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
+                                                <h5 class="mb-0 ps-4 me-4">Tổng</h5>
+                                                <p data-total-cart-price="${totalPrice}" class="mb-0 pe-4">
                                                     <fmt:formatNumber type="number" maxFractionDigits="3"
                                                         value="${totalPrice}" />đ
                                                 </p>
+                                                <input type="number"
+                                                    value="<fmt:formatNumber value='${totalPrice}' type='number' groupingUsed='false'  maxFractionDigits='0'/>"
+                                                    name="amount">
                                             </div>
 
-                                            <div class="d-flex justify-content-between mb-4">
-                                                <h5 class="mb-0 me-4">Tổng :</h5>
-                                                <p data-total-cart-price="${totalPrice}" class="mb-0">
-                                                    <fmt:formatNumber type="number" maxFractionDigits="3"
-                                                        value="${totalPrice}" />đ
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="py-4 mb-4 border-top border-bottom d-flex justify-content-between">
-                                            <h5 class="mb-0 ps-4 me-4">Tổng</h5>
-                                            <p data-total-cart-price="${totalPrice}" class="mb-0 pe-4">
-                                                <fmt:formatNumber type="number" maxFractionDigits="3"
-                                                    value="${totalPrice}" />đ
-                                            </p>
-                                        </div>
-                                        <form action="/checkout" method="post">
                                             <c:forEach var="item" items="${listCart_details}">
                                                 <div class="mb-5 d-none">
                                                     <label for="">id:</label><br>
@@ -163,11 +184,10 @@
                                             <button
                                                 class="btn border-secondary rounded-pill px-4 py-3 text-primary text-uppercase mb-4 ms-4"
                                                 type="submit">Proceed Checkout</button>
-                                        </form>
-
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </form>
                         </c:if>
                     </div>
                 </div>

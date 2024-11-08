@@ -1,6 +1,8 @@
 package com.shop.vtluan.controller;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,11 +19,14 @@ import com.shop.vtluan.model.Cart;
 import com.shop.vtluan.model.Cart_detail;
 import com.shop.vtluan.model.Products;
 import com.shop.vtluan.model.User;
+import com.shop.vtluan.model.DTO.ReceiverDto;
 import com.shop.vtluan.service.CartService;
 import com.shop.vtluan.service.Cart_detailService;
 import com.shop.vtluan.service.ProductService;
 import com.shop.vtluan.service.UserService;
+import com.shop.vtluan.service.VNPayService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
@@ -38,13 +43,15 @@ public class ProductController {
     private final Cart_detailService cart_detailService;
     private final UserService userService;
     private final CartService cartService;
+    private final VNPayService vnPayService;
 
     public ProductController(ProductService productService, Cart_detailService cart_detailService,
-            UserService userService, CartService cartService) {
+            UserService userService, CartService cartService, VNPayService vnPayService) {
         this.productService = productService;
         this.cart_detailService = cart_detailService;
         this.userService = userService;
         this.cartService = cartService;
+        this.vnPayService = vnPayService;
     }
 
     @GetMapping("admin/products")
@@ -303,6 +310,53 @@ public class ProductController {
         model.addAttribute("listCart_details", listCart_details);
         model.addAttribute("totalPrice", totalPrice);
         return "user/checkout";
+    }
+
+    @PostMapping("/order")
+    public String submidOrder(@RequestParam("amount") long orderTotal,
+            ReceiverDto receiverDto,
+            HttpServletRequest request) {
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+        String vnpayUrl = vnPayService.createOrder(orderTotal, receiverDto, baseUrl);
+        return "redirect:" + vnpayUrl;
+    }
+
+    @GetMapping("/vnpay-payment")
+    public String GetMapping(HttpServletRequest request, Model model) {
+        int paymentStatus = vnPayService.orderReturn(request);
+
+        String nameInfo = request.getParameter("vnp_NameInfo");
+        String phoneNumberInfo = request.getParameter("vnp_PhoneNumberInfo");
+        String addressInfo = request.getParameter("vnp_AddressInfo");
+        String paymentTime = request.getParameter("vnp_PayDate");
+        String transactionId = request.getParameter("vnp_TransactionNo");
+        String totalPrice = request.getParameter("vnp_Amount");
+        String orderInfor = request.getParameter("vnp_OrderInfo");
+
+        // Định dạng để phân tích chuỗi đầu vào
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+        // Phân tích chuỗi thành LocalDateTime
+        LocalDateTime dateTime = LocalDateTime.parse(paymentTime, inputFormatter);
+
+        // Định dạng lại thành chuỗi thời gian dễ đọc
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Định dạng lại thời gian
+        String formattedTime = dateTime.format(outputFormatter);
+
+        long totalPriceFormat = Long.parseLong(totalPrice);
+        totalPriceFormat = totalPriceFormat / 100;
+
+        model.addAttribute("name", nameInfo);
+        model.addAttribute("phoneNumber", phoneNumberInfo);
+        model.addAttribute("address", addressInfo);
+        model.addAttribute("totalPrice", totalPriceFormat);
+        model.addAttribute("paymentTime", formattedTime);
+        model.addAttribute("transactionId", transactionId);
+        model.addAttribute("orderInfor", orderInfor);
+
+        return paymentStatus == 1 ? "user/ordersuccess" : "user/orderfail";
     }
 
 }

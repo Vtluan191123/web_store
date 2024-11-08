@@ -1,6 +1,7 @@
 package com.shop.vtluan.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
@@ -44,6 +46,9 @@ public class User implements Serializable {
 
     @OneToOne(mappedBy = "user")
     private Token token;
+
+    @OneToMany(mappedBy = "user")
+    List<Orders> orders;
 
     public User(long id,
             @NotNull(message = "khong duoc de trong") @Size(min = 3, message = "Nhập tối thiểu 3 kí tự") String email,

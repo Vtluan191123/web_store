@@ -90,5 +90,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
                 registry.addResourceHandler("/product_detail/client/**")
                                 .addResourceLocations("resources/client/");
+
+                registry.addResourceHandler("/vnpay-payment/client/**")
+                                .addResourceLocations("/resources/client/");
         }
 }
