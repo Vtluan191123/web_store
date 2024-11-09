@@ -93,8 +93,8 @@ public class VNPayService {
             String fieldName = null;
             String fieldValue = null;
             try {
-                fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.US_ASCII.toString());
-                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.US_ASCII.toString());
+                fieldName = URLEncoder.encode((String) params.nextElement(), StandardCharsets.UTF_8.toString());
+                fieldValue = URLEncoder.encode(request.getParameter(fieldName), StandardCharsets.UTF_8.toString());
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
