@@ -16,10 +16,20 @@ public class Orders {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
     double toltalPrice;
-    String receiverName;
-    String receiverPhoneNumber;
-    String receiverAddress;
+    String infor;
     String status;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Order_detail> getOrder_details() {
+        return order_details;
+    }
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -27,17 +37,6 @@ public class Orders {
 
     @OneToMany(mappedBy = "orders")
     List<Order_detail> order_details;
-
-    public Orders(long id, double toltalPrice, String receiverName, String receiverPhoneNumber, String receiverAddress,
-            String status, User user) {
-        this.id = id;
-        this.toltalPrice = toltalPrice;
-        this.receiverName = receiverName;
-        this.receiverPhoneNumber = receiverPhoneNumber;
-        this.receiverAddress = receiverAddress;
-        this.status = status;
-        this.user = user;
-    }
 
     public Orders() {
     }
@@ -50,32 +49,16 @@ public class Orders {
         this.toltalPrice = toltalPrice;
     }
 
-    public String getReceiverName() {
-        return receiverName;
-    }
-
-    public void setReceiverName(String receiverName) {
-        this.receiverName = receiverName;
-    }
-
-    public String getReceiverPhoneNumber() {
-        return receiverPhoneNumber;
-    }
-
-    public void setReceiverPhoneNumber(String receiverPhoneNumber) {
-        this.receiverPhoneNumber = receiverPhoneNumber;
-    }
-
-    public String getReceiverAddress() {
-        return receiverAddress;
-    }
-
-    public void setReceiverAddress(String receiverAddress) {
-        this.receiverAddress = receiverAddress;
-    }
-
     public String getStatus() {
         return status;
+    }
+
+    public String getInfor() {
+        return infor;
+    }
+
+    public void setInfor(String infor) {
+        this.infor = infor;
     }
 
     public void setStatus(String status) {

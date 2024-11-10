@@ -61,7 +61,7 @@
                                         <th>Id đơn hàng</th>
                                         <th>Thời gian giao dịch</th>
                                         <th>Số tiền giao dịch</th>
-                                        <th>Nội dung giao dịch</th>
+                                        <th>Thông tin người nhận</th>
                                     </tr>
                                 </thead>
                                 <tbody>

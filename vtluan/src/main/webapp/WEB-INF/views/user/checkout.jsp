@@ -124,15 +124,17 @@
                                         <div class="bg-light rounded p-4 h-100">
                                             <h3>Thông tin người nhận</h3>
                                             <label class="mb-1" for="hoten">Họ tên</label><br>
-                                            <input class="mb-3 w-100 rounded border border-dark p-2" type="text"
-                                                id="hoten" name="receiverName" placeholder="Họ tên ..." /><br>
+                                            <input required class="mb-3 w-100 rounded border border-dark p-2"
+                                                type="text" id="hoten" name="receiverName"
+                                                placeholder="Họ tên ..." /><br>
                                             <label class="mb-1" for="sdt">Số điện thoại</label><br>
-                                            <input class="mb-3 w-100 rounded border border-dark p-2" type="text"
-                                                id="sdt" name="receiverPhoneNumber"
+                                            <input required class="mb-3 w-100 rounded border border-dark p-2"
+                                                type="text" id="sdt" name="receiverPhoneNumber"
                                                 placeholder="Số điện thoại ..." /><br>
                                             <label class="mb-1" for="diachi">Địa chỉ</label><br>
-                                            <input class="mb-3 w-100 rounded border border-dark p-2" type="text"
-                                                id="diachi" name="receiverAddress" placeholder="Địa chỉ ..." /><br>
+                                            <input required class="mb-3 w-100 rounded border border-dark p-2"
+                                                type="text" id="diachi" name="receiverAddress"
+                                                placeholder="Địa chỉ ..." /><br>
                                             <a href="/cart"><i class="fas fa-arrow-left"></i><span class="ms-2">Trở
                                                     lại giỏ
                                                     hàng</span></a>
@@ -166,7 +168,7 @@
                                                     <fmt:formatNumber type="number" maxFractionDigits="3"
                                                         value="${totalPrice}" />đ
                                                 </p>
-                                                <input type="number"
+                                                <input class="d-none" type="number"
                                                     value="<fmt:formatNumber value='${totalPrice}' type='number' groupingUsed='false'  maxFractionDigits='0'/>"
                                                     name="amount">
                                             </div>

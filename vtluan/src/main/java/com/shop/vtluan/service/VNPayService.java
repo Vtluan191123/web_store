@@ -1,10 +1,18 @@
 package com.shop.vtluan.service;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 import com.shop.vtluan.config.VNPayConfig;
+import com.shop.vtluan.model.Cart;
+import com.shop.vtluan.model.Cart_detail;
+import com.shop.vtluan.model.Order_detail;
+import com.shop.vtluan.model.Orders;
+import com.shop.vtluan.model.User;
 import com.shop.vtluan.model.DTO.ReceiverDto;
+import com.shop.vtluan.repository.Order_detailRepository;
+import com.shop.vtluan.repository.OrdersRepository;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -14,6 +22,21 @@ import java.util.*;
 
 @Service
 public class VNPayService {
+
+    private final CartService cartService;
+    private final UserService userService;
+    private final Cart_detailService cart_detailService;
+    private final OrdersRepository ordersRepository;
+    private final Order_detailRepository order_detailRepository;
+
+    public VNPayService(CartService cartService, UserService userService, Cart_detailService cart_detailService,
+            OrdersRepository ordersRepository, Order_detailRepository order_detailRepository) {
+        this.cartService = cartService;
+        this.userService = userService;
+        this.cart_detailService = cart_detailService;
+        this.ordersRepository = ordersRepository;
+        this.order_detailRepository = order_detailRepository;
+    }
 
     public String createOrder(long total, ReceiverDto receiverDto, String urlReturn) {
         String vnp_Version = "2.1.0";
@@ -35,7 +58,9 @@ public class VNPayService {
         // vnp_Params.put("vnp_PhoneNumberInfo", receiverDto.getReceiverPhoneNumber());
         // vnp_Params.put("vnp_AddressInfo", receiverDto.getReceiverAddress());
         vnp_Params.put("vnp_OrderType", orderType);
-        vnp_Params.put("vnp_OrderInfo", receiverDto.getReceiverName());
+        vnp_Params.put("vnp_OrderInfo",
+                "TNN: " + receiverDto.getReceiverName() + "- SĐT: " + receiverDto.getReceiverPhoneNumber()
+                        + "- ĐC: " + receiverDto.getReceiverAddress());
 
         String locate = "vn";
         vnp_Params.put("vnp_Locale", locate);
@@ -102,6 +127,9 @@ public class VNPayService {
                 fields.put(fieldName, fieldValue);
             }
         }
+        // get infor receiverDto
+        String infor = request.getParameter("vnp_OrderInfo");
+        String total = request.getParameter("vnp_Amount");
 
         String vnp_SecureHash = request.getParameter("vnp_SecureHash");
         if (fields.containsKey("vnp_SecureHashType")) {
@@ -113,6 +141,30 @@ public class VNPayService {
         String signValue = VNPayConfig.hashAllFields(fields);
         if (signValue.equals(vnp_SecureHash)) {
             if ("00".equals(request.getParameter("vnp_TransactionStatus"))) {
+                HttpSession session = request.getSession();
+                String email = (String) session.getAttribute("emailSession");
+                User user = this.userService.getUserByEmail(email);
+                Cart cart = this.cartService.getCartByUser(user);
+                List<Cart_detail> cart_details = cart.getCart_details();
+
+                Orders order = new Orders();
+                order.setInfor(infor);
+                order.setToltalPrice(Double.parseDouble(total) / 100);
+                order.setUser(user);
+                order.setStatus("PENDING");
+                this.ordersRepository.save(order);
+
+                for (Cart_detail cart_detail : cart_details) {
+                    Order_detail order_detail = new Order_detail();
+                    order_detail.setOrders(order);
+                    order_detail.setProducts(cart_detail.getProducts());
+                    order_detail.setQuantity(cart_detail.getQuantity());
+                    this.order_detailRepository.save(order_detail);
+                    this.cart_detailService.deleteItemCart(cart_detail);
+                }
+                this.cartService.removeCart(cart);
+
+                session.setAttribute("total", 0);
                 return 1;
             } else {
                 return 0;

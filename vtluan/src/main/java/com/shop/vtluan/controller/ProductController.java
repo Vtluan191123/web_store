@@ -313,9 +313,17 @@ public class ProductController {
     }
 
     @PostMapping("/order")
-    public String submidOrder(@RequestParam("amount") long orderTotal,
-            ReceiverDto receiverDto,
+    public String submidOrder(@RequestParam("amount") long orderTotal, Model model,
+            @Valid ReceiverDto receiverDto, BindingResult bindingResult,
             HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            List<FieldError> errors = bindingResult.getFieldErrors();
+            for (FieldError fieldError : errors) {
+                System.out.println(">>>" + fieldError.getField() + ">>>" + fieldError.getDefaultMessage());
+            }
+            model.addAttribute("errors", errors);
+            return "user/checkout";
+        }
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
         String vnpayUrl = vnPayService.createOrder(orderTotal, receiverDto, baseUrl);
         return "redirect:" + vnpayUrl;

@@ -1,8 +1,18 @@
 package com.shop.vtluan.model.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class ReceiverDto {
+
+    @NotBlank(message = "Không được để chống")
+    @Size(min = 3, message = "Tối thiểu 3 kí tự")
     String receiverName;
+    @NotBlank(message = "Không được để chống")
+    @Size(min = 3, message = "Tối thiểu 3 kí tự")
     String receiverPhoneNumber;
+    @NotBlank(message = "Không được để chống")
+    @Size(min = 3, message = "Tối thiểu 3 kí tự")
     String receiverAddress;
 
     public String getReceiverName() {
