@@ -149,7 +149,7 @@ public class VNPayService {
 
                 Orders order = new Orders();
                 order.setInfor(infor);
-                order.setToltalPrice(Double.parseDouble(total) / 100);
+                order.setTotalPrice(Double.parseDouble(total) / 100);
                 order.setUser(user);
                 order.setStatus("PENDING");
                 this.ordersRepository.save(order);

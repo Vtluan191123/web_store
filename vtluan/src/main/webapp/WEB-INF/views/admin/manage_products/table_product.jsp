@@ -99,12 +99,13 @@
                                     <thead class="table-dark">
                                         <tr>
                                             <th scope="col">#</th>
+                                            <th scope="col">Image</th>
                                             <th scope="col">Name</th>
                                             <th scope="col">Brand</th>
                                             <th scope="col">Description</th>
                                             <th scope="col">Des_short</th>
                                             <th scope="col">Price</th>
-                                            <th scope="col">Image</th>
+                                            <th scope="col">Target</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -115,6 +116,11 @@
                                                 <!-- <c:set var="image" value="${product.image}" /> -->
                                                 <tr>
                                                     <td>${product.id}</td>
+                                                    <td>
+                                                        <img class="mt-4"
+                                                            style="width: 100px;height: 100px;border-radius: 50%;"
+                                                            src="/admin/image/${product.image}" alt="">
+                                                    </td>
                                                     <td>${product.name}</td>
                                                     <td>${product.brand}</td>
                                                     <td
@@ -129,10 +135,9 @@
                                                             value="${product.price}" />đ
                                                     </td>
                                                     <td>
-                                                        <img class="mt-4"
-                                                            style="width: 100px;height: 100px;border-radius: 50%;"
-                                                            src="/admin/image/${product.image}" alt="">
+                                                        ${product.target}
                                                     </td>
+
 
                                                     <td class="h-100 d-flex justify-content-around flex-column">
                                                         <a class="btn btn-success my-2"
@@ -152,8 +157,13 @@
                                             <tbody>
                                                 <c:forEach var="result" items="${results}">
                                                     <!-- <c:set var="image" value="${product.image}" /> -->
-                                                    <tr>
+                                                    <tr class="align-middle">
                                                         <td>${result.id}</td>
+                                                        <td>
+                                                            <img class="mt-4"
+                                                                style="width: 100px;height: 100px;border-radius: 50%;"
+                                                                src="/admin/image/${result.image}" alt="">
+                                                        </td>
                                                         <td>${result.name}</td>
                                                         <td>${result.brand}</td>
                                                         <td
@@ -167,10 +177,9 @@
                                                             <fmt:formatNumber type="number" maxFractionDigits="3"
                                                                 value="${result.price}" />đ
                                                         </td>
+
                                                         <td>
-                                                            <img class="mt-4"
-                                                                style="width: 100px;height: 100px;border-radius: 50%;"
-                                                                src="/admin/image/${result.image}" alt="">
+                                                            ${product.target}
                                                         </td>
 
                                                         <td class="h-100 d-flex justify-content-around flex-column">

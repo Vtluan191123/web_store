@@ -108,7 +108,7 @@
                                     <tbody>
                                         <c:forEach var="user" items="${users}">
                                             <c:set var="image" value="${user.image}" />
-                                            <tr>
+                                            <tr class="align-middle">
                                                 <td>${user.id}</td>
                                                 <td>${user.email}</td>
                                                 <td>${user.name}</td>
@@ -146,7 +146,7 @@
                                     <tbody>
                                         <c:if test="${not empty results}">
                                             <c:forEach var="result" items="${results}">
-                                                <tr>
+                                                <tr class="align-middle">
                                                     <td>${result.id}</td>
                                                     <td>${result.email}</td>
                                                     <td>${result.name}</td>

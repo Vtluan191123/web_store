@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.shop.vtluan.model.Orders;
 import com.shop.vtluan.model.Role;
 import com.shop.vtluan.model.User;
+import com.shop.vtluan.repository.OrdersRepository;
 import com.shop.vtluan.service.RoleService;
 import com.shop.vtluan.service.UserService;
 
@@ -30,12 +32,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 public class UserController {
 
-    UserService userService;
-    RoleService roleService;
+    private final UserService userService;
+    private final RoleService roleService;
+    private final OrdersRepository ordersRepository;
 
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService, RoleService roleService, OrdersRepository ordersRepository) {
         this.userService = userService;
         this.roleService = roleService;
+        this.ordersRepository = ordersRepository;
     }
 
     @GetMapping("admin/users")
@@ -158,6 +162,14 @@ public class UserController {
             model.addAttribute("user", user.get());
         }
         return "admin/manage_user/view_user";
+    }
+
+    @GetMapping("/admin/orders")
+    public String getOrders(Model model) {
+        List<Orders> orders = this.ordersRepository.findAll();
+
+        model.addAttribute("orders", orders);
+        return "admin/manage_orders/table_orders";
     }
 
 }

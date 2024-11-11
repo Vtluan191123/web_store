@@ -15,12 +15,18 @@ public class Orders {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
-    double toltalPrice;
+    double totalPrice;
     String infor;
     String status;
 
-    public User getUser() {
-        return user;
+    public Orders(long id, double totalPrice, String infor, String status, User user,
+            List<Order_detail> order_details) {
+        this.id = id;
+        this.totalPrice = totalPrice;
+        this.infor = infor;
+        this.status = status;
+        this.user = user;
+        this.order_details = order_details;
     }
 
     public void setUser(User user) {
@@ -41,16 +47,28 @@ public class Orders {
     public Orders() {
     }
 
-    public double getToltalPrice() {
-        return toltalPrice;
+    public double getTotalPrice() {
+        return totalPrice;
     }
 
-    public void setToltalPrice(double toltalPrice) {
-        this.toltalPrice = toltalPrice;
+    public void setTotalPrice(double toltalPrice) {
+        this.totalPrice = toltalPrice;
     }
 
     public String getStatus() {
         return status;
+    }
+
+    public void setOrder_details(List<Order_detail> order_details) {
+        this.order_details = order_details;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getInfor() {

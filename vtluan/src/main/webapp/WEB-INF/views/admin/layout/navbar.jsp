@@ -27,7 +27,7 @@
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="/admin/users" class="dropdown-item">Users</a>
                             <a href="/admin/products" class="dropdown-item">Products</a>
-                            <a href="/admin/users" class="dropdown-item">Orders</a>
+                            <a href="/admin/orders" class="dropdown-item">Orders</a>
                         </div>
                     </div>
 
